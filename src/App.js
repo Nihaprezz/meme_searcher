@@ -1,26 +1,43 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import SearchContainer from '../src/containers/SearchContainer'
+import ResultsContainer from '../src/containers/ResultsContainer'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor(){
+    super();
+
+    this.state = {
+      allMemes: [],
+      searchText: ""
+    }
+  }
+
+  searchMemes = (event) => {
+    this.setState({
+      searchText: event.target.value
+    })
+  }
+
+
+
+  componentDidMount(){
+    fetch("https://api.imgflip.com/get_memes")
+    .then(response => response.json())
+    .then(data => {
+      this.setState({
+        allMemes: data.data.memes
+      })
+    })
+  }
+
+  render(){
+      return (
+      <div className="App">
+        < SearchContainer searchMemes={this.searchMemes}/> 
+        < ResultsContainer memesArray={this.state.allMemes.filter(meme => meme.name.toLowerCase().includes(this.state.searchText)).slice(0, 30)}/>
+      </div>
+    );
+  }
 }
 
 export default App;
